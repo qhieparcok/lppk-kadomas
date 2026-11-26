@@ -11,7 +11,41 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="locked">
+
+<!-- ================= PORTAL LOGIN ================= -->
+<section id="authScreen" aria-label="Masuk aplikasi">
+  <div class="auth-card">
+    <p class="auth-eyebrow">Kelurahan Kadomas</p>
+    <h1>Laporan <em>Tahunan.</em></h1>
+    <p class="auth-sub">Masuk untuk mengelola laporan tahunan. Pendaftar pertama otomatis menjadi admin.</p>
+    <form id="authForm" novalidate>
+      <div class="field">
+        <label for="authEmail">Email</label>
+        <input id="authEmail" type="email" required autocomplete="email" placeholder="nama@contoh.id">
+      </div>
+      <div class="field">
+        <label for="authPassword">Kata sandi</label>
+        <input id="authPassword" type="password" required autocomplete="current-password" placeholder="Minimal 6 karakter" minlength="6">
+      </div>
+      <p class="auth-msg" id="authMsg" role="status" aria-live="polite"></p>
+      <div class="auth-actions">
+        <button class="btn" type="submit" id="authSubmitBtn">Masuk</button>
+        <button class="btn btn--ghost" type="button" id="authToggleBtn">Belum punya akun? Daftar</button>
+      </div>
+    </form>
+    <div id="authPending" hidden>
+      <p><b>Akunmu sudah dibuat, tapi belum disetujui admin.</b></p>
+      <p>Hubungi Sekretaris Lurah (admin) untuk menyetujui akunmu, lalu masuk lagi.</p>
+      <button class="btn btn--ghost" type="button" id="authPendingLogoutBtn">Keluar</button>
+    </div>
+    <div id="authCheckEmail" hidden>
+      <p><b>Periksa emailmu.</b></p>
+      <p>Klik tautan konfirmasi di email itu, lalu kembali ke sini dan masuk dengan email dan kata sandi yang baru dibuat.</p>
+      <button class="btn btn--ghost" type="button" id="authCheckEmailBackBtn">Kembali masuk</button>
+    </div>
+  </div>
+</section>
 
 <header class="topbar">
   <div class="wrap topbar__in">
@@ -25,6 +59,7 @@
       <select id="yearSelect" aria-label="Pilih tahun laporan"></select>
     </div>
     <span class="mode-badge" id="modeBadge"><span class="dot"></span>Mode lokal</span>
+    <span class="user-chip" id="userChip" hidden><span id="userChipText"></span><button class="btn btn--ghost btn--sm" type="button" id="logoutBtn">Keluar</button></span>
   </div>
 </header>
 
@@ -35,6 +70,7 @@
     <button class="tab-btn" role="tab" id="tabbtn-rekap" aria-controls="tab-rekap" aria-selected="false" data-tab="rekap"><span class="tab-num">03</span>Rekap</button>
     <button class="tab-btn" role="tab" id="tabbtn-cetak" aria-controls="tab-cetak" aria-selected="false" data-tab="cetak"><span class="tab-num">04</span>Cetak Laporan Tahunan</button>
     <button class="tab-btn" role="tab" id="tabbtn-materi" aria-controls="tab-materi" aria-selected="false" data-tab="materi"><span class="tab-num">05</span>Materi</button>
+    <button class="tab-btn" role="tab" id="tabbtn-pengguna" aria-controls="tab-pengguna" aria-selected="false" data-tab="pengguna"><span class="tab-num">06</span>Pengguna</button>
   </div>
 </nav>
 
@@ -60,7 +96,7 @@
       <article class="card card--flat step-card" data-reveal style="--i:1">
         <span class="step-card__num">LANGKAH 02</span>
         <h3>Isi Data</h3>
-        <p>Monografi per 31 Desember dan 10 kategori entri, termasuk buku agenda surat masuk dan keluar.</p>
+        <p>Monografi per 31 Desember dan 11 kategori entri, termasuk buku agenda surat masuk dan keluar.</p>
         <button class="step-card__go" data-goto="input">Buka Input Data →</button>
       </article>
       <article class="card card--flat step-card" data-reveal style="--i:2">
@@ -79,14 +115,14 @@
 
     <div class="section-head" data-reveal>
       <h2>Kelengkapan laporan <em>tahun ini</em></h2>
-      <p> Sembilan kelompok data Laporan Tahunan. Kelompok terisi bila monografi sudah disimpan, atau sudah ada minimal satu entri pada kelompok itu.</p>
+      <p> Sepuluh kelompok data Laporan Tahunan. Kelompok terisi bila monografi sudah disimpan, atau sudah ada minimal satu entri pada kelompok itu.</p>
     </div>
 
     <div class="card" data-reveal>
       <div class="complete">
         <div>
           <div class="complete__pct"><span id="completePct">0</span><small>%</small></div>
-          <div class="complete__label" id="completeLabel">0 dari 9 kelompok terisi · 0 entri tercatat</div>
+          <div class="complete__label" id="completeLabel">0 dari 10 kelompok terisi · 0 entri tercatat</div>
           <div class="progress" role="progressbar" aria-label="Kelengkapan laporan" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="completeBarWrap">
             <div class="progress__fill" id="completeBar"></div>
           </div>
@@ -98,6 +134,7 @@
     <div class="section-head" data-reveal id="identity">
       <h2>Identitas kelurahan &amp; <em>penandatangan</em></h2>
       <p>Identitas ini tampil di kop dan lembar tanda tangan dokumen Laporan Tahunan. Tersimpan per tahun laporan.</p>
+      <p class="laporan-note" id="identityAdminNote" hidden>Hanya admin yang bisa mengubah identitas — kamu masuk sebagai user.</p>
     </div>
 
     <form class="card" id="identityForm" data-reveal>
@@ -141,7 +178,7 @@
     <p class="eyebrow" data-reveal>Input Data · Tahun <span class="yearEcho"></span></p>
     <h2 class="display" data-reveal style="--i:1; font-size:clamp(32px,4.5vw,52px)">Isi data, <em>satu per satu.</em></h2>
     <p class="lede" data-reveal style="--i:2; margin-top:14px">
-      Mulai dari monografi per 31 Desember, lalu tambah entri untuk 10 kategori.
+      Mulai dari monografi per 31 Desember, lalu tambah entri untuk 11 kategori.
       Semua entri bisa diubah dan dihapus. Data tersimpan per tahun laporan.
     </p>
 
@@ -207,7 +244,7 @@
     </form>
 
     <div class="section-head" data-reveal>
-      <h2>Entri <em>10 kategori</em></h2>
+      <h2>Entri <em>11 kategori</em></h2>
       <p>Pilih kategori di rel bernomor, lalu tambah entri. Surat masuk dan surat keluar dicatat lewat buku agenda.</p>
     </div>
 
@@ -236,7 +273,7 @@
     <h2 class="display" data-reveal style="--i:1; font-size:clamp(32px,4.5vw,52px)">Ringkasan <em>sebelum disusun.</em></h2>
     <p class="lede" data-reveal style="--i:2; margin-top:14px">
       Periksa kembali apa yang sudah terkumpul: berapa entri per kategori, berapa surat
-      masuk dan keluar, dan seberapa lengkap sembilan kelompok data Laporan Tahunan.
+      masuk dan keluar, dan seberapa lengkap sepuluh kelompok data Laporan Tahunan.
     </p>
 
     <div class="grid grid--4" style="margin-top:32px">
@@ -261,7 +298,7 @@
     <div class="grid grid--2" style="margin-top:16px">
       <article class="card" data-reveal>
         <h3>Capaian kelengkapan</h3>
-        <p class="card__sub">Sembilan kelompok data Laporan Tahunan yang sudah terisi.</p>
+        <p class="card__sub">Sepuluh kelompok data Laporan Tahunan yang sudah terisi.</p>
         <div class="donut-wrap" style="margin-top:20px">
           <svg class="donut" viewBox="0 0 168 168" role="img" aria-label="Donat capaian kelengkapan">
             <circle class="donut__track" cx="84" cy="84" r="70"></circle>
@@ -386,6 +423,18 @@
     <div class="section-head" id="materi-roadmap" data-reveal style="margin-top:64px">
       <h2>Roadmap penyusunan <em>Laporan Tahunan</em></h2>
       <p>Enam tahap dari Oktober sampai Maret. Gulir ke bawah — jalurnya menggambar dirinya sendiri mengikuti guliranmu.</p>
+    </div>
+  </section>
+  <!-- ================= PENGGUNA (admin saja) ================= -->
+  <section class="tab-panel" id="tab-pengguna" role="tabpanel" aria-labelledby="tabbtn-pengguna" hidden>
+    <p class="eyebrow" data-reveal>Kelola Pengguna · Admin</p>
+    <h2 class="display" data-reveal style="--i:1; font-size:clamp(32px,4.5vw,52px)">Siapa saja yang <em>bisa masuk.</em></h2>
+    <p class="lede" data-reveal style="--i:2; margin-top:14px">
+      Akun baru yang mendaftar harus disetujui dulu di sini sebelum bisa memakai aplikasi.
+      Admin bisa mengubah peran (admin/user) dan menonaktifkan akun yang tidak disetujui.
+    </p>
+    <div class="card" data-reveal>
+      <div id="userList"><!-- diisi JS --></div>
     </div>
   </section>
 </main>

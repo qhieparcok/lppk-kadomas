@@ -114,3 +114,97 @@ grant usage on schema public to anon, authenticated;
 grant select, insert, update, delete on public.report_settings to anon, authenticated;
 grant select, insert, update, delete on public.monografi to anon, authenticated;
 grant select, insert, update, delete on public.items to anon, authenticated;
+
+-- ============================================================
+-- LOGIN (Supabase Auth) + PERAN admin/user — 26 Nov 2026
+-- ------------------------------------------------------------
+-- Peran disimpan di public.profiles. Pendaftar pertama otomatis
+-- jadi admin (dan langsung disetujui); pendaftar berikutnya jadi
+-- user dan harus disetujui admin dulu sebelum bisa memakai aplikasi.
+-- Data lama (tanpa pemilik) tetap bisa dibaca semua pengguna yang
+-- sudah login + disetujui.
+-- ============================================================
+
+create table if not exists public.profiles (
+  id uuid primary key references auth.users (id) on delete cascade,
+  email text not null,
+  role text not null default 'user' check (role in ('admin', 'user')),
+  approved boolean not null default false,
+  created_at timestamptz not null default now()
+);
+alter table public.profiles enable row level security;
+grant select, insert, update, delete on public.profiles to authenticated;
+
+-- Pembantu RLS (security definer: membaca profiles tanpa rekursi RLS)
+create or replace function public.is_admin()
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.profiles where id = auth.uid() and role = 'admin' and approved = true);
+$$;
+create or replace function public.is_approved()
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.profiles where id = auth.uid() and approved = true);
+$$;
+
+-- Pendaftar baru: yang pertama jadi admin, sisanya user belum disetujui
+create or replace function public.handle_new_user()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  insert into public.profiles (id, email, role, approved)
+  values (
+    new.id,
+    coalesce(new.email, ''),
+    case when (select count(*) from public.profiles) = 0 then 'admin' else 'user' end,
+    case when (select count(*) from public.profiles) = 0 then true else false end
+  )
+  on conflict (id) do nothing;
+  return new;
+end;
+$$;
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created after insert on auth.users
+for each row execute function public.handle_new_user();
+
+-- Kebijakan profiles: yang login bisa membaca daftar; tulis profil
+-- sendiri saat pertama kali (cadangan bila trigger gagal); ubah
+-- peran/persetujuan hanya admin.
+drop policy if exists "Profil dibaca yang login" on public.profiles;
+create policy "Profil dibaca yang login" on public.profiles
+  for select to authenticated using (true);
+drop policy if exists "Profil dibuat sendiri" on public.profiles;
+create policy "Profil dibuat sendiri" on public.profiles
+  for insert to authenticated with check (id = auth.uid());
+drop policy if exists "Profil diubah admin" on public.profiles;
+create policy "Profil diubah admin" on public.profiles
+  for update to authenticated using (public.is_admin()) with check (public.is_admin());
+
+-- Cabut kebijakan publik lama di 3 tabel data
+drop policy if exists "Publik baca report_settings" on public.report_settings;
+drop policy if exists "Publik tulis report_settings" on public.report_settings;
+drop policy if exists "Publik baca monografi" on public.monografi;
+drop policy if exists "Publik tulis monografi" on public.monografi;
+drop policy if exists "Publik baca items" on public.items;
+drop policy if exists "Publik tulis items" on public.items;
+
+-- report_settings (identitas): baca = login + disetujui; tulis = admin saja
+drop policy if exists "Identitas dibaca yang login" on public.report_settings;
+create policy "Identitas dibaca yang login" on public.report_settings
+  for select to authenticated using (public.is_approved());
+drop policy if exists "Identitas ditulis admin" on public.report_settings;
+create policy "Identitas ditulis admin" on public.report_settings
+  for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
+-- monografi: baca + tulis = login + disetujui
+drop policy if exists "Monografi dibaca yang login" on public.monografi;
+create policy "Monografi dibaca yang login" on public.monografi
+  for select to authenticated using (public.is_approved());
+drop policy if exists "Monografi ditulis yang login" on public.monografi;
+create policy "Monografi ditulis yang login" on public.monografi
+  for all to authenticated using (public.is_approved()) with check (public.is_approved());
+
+-- items (termasuk entri PBB): baca + tulis = login + disetujui
+drop policy if exists "Entri dibaca yang login" on public.items;
+create policy "Entri dibaca yang login" on public.items
+  for select to authenticated using (public.is_approved());
+drop policy if exists "Entri ditulis yang login" on public.items;
+create policy "Entri ditulis yang login" on public.items
+  for all to authenticated using (public.is_approved()) with check (public.is_approved());

@@ -15,6 +15,13 @@ const easeOutCubic = (t) => 1 - (1 - t) ** 3;
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'id-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9));
 const fmtNum = (n) => Number(n || 0).toLocaleString('id-ID');
+const fmtRp = (n) => 'Rp ' + Number(n || 0).toLocaleString('id-ID');
+const MONEY_KEYS = new Set(['target', 'realisasi', 'tunggakan']);
+const fmtMetaChip = (k, v) => {
+  const s = String(v ?? '').trim();
+  if (!s) return '';
+  return MONEY_KEYS.has(k) && !isNaN(Number(s)) ? `${esc(k)}: ${fmtRp(s)}` : `${esc(k)}: ${esc(s)}`;
+};
 const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ---------- Konstanta domain ---------- */
@@ -89,6 +96,16 @@ const CATEGORIES = [
       { key: 'penanggung_jawab', label: 'Penanggung jawab', type: 'text', placeholder: 'cth. Seksi Pemerintahan' },
       { key: 'target_waktu', label: 'Target waktu', type: 'text', placeholder: 'cth. Triwulan I tahun berikutnya' },
     ] },
+  { id: 'pbb', num: '11', name: 'PBB (Pajak Bumi dan Bangunan)', group: 'pbb',
+    desc: 'Pajak Bumi dan Bangunan: SPPT, target, realisasi, dan tunggakan per tahun pajak.',
+    meta: [
+      { key: 'tahun_pajak', label: 'Tahun pajak', type: 'text', placeholder: 'cth. 2026' },
+      { key: 'jumlah_sppt', label: 'Jumlah SPPT', type: 'number', placeholder: 'cth. 1250' },
+      { key: 'target', label: 'Target (Rp)', type: 'number', placeholder: 'cth. 450000000' },
+      { key: 'realisasi', label: 'Realisasi (Rp)', type: 'number', placeholder: 'cth. 380000000' },
+      { key: 'tunggakan', label: 'Tunggakan (Rp)', type: 'number', placeholder: 'cth. 70000000' },
+      { key: 'status', label: 'Status', type: 'select', options: ['Lunas', 'Sebagian', 'Belum lunas'] },
+    ] },
 ];
 
 const GROUPS = [
@@ -101,6 +118,7 @@ const GROUPS = [
   { id: 'kesehatan_pendidikan', name: 'Kesehatan & Pendidikan', hint: 'entri kes./pend.' },
   { id: 'permasalahan', name: 'Permasalahan & Kendala', hint: 'entri permasalahan' },
   { id: 'tindak_lanjut', name: 'Rencana Tindak Lanjut', hint: 'entri tindak lanjut' },
+  { id: 'pbb', name: 'PBB — Pajak Bumi dan Bangunan', hint: 'entri PBB' },
 ];
 
 const MONOGRAFI_FIELDS = [
@@ -259,6 +277,7 @@ function completeness() {
 
 /* ---------- Tabs ---------- */
 function switchTab(name, { scroll = true } = {}) {
+  if ((name === 'cetak' || name === 'pengguna') && !isAdmin()) { toast('Bagian ini hanya untuk admin.'); return; }
   state.tab = name;
   $$('.tab-btn').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
   $$('.tab-panel').forEach((p) => { p.hidden = p.id !== 'tab-' + name; });
@@ -266,6 +285,7 @@ function switchTab(name, { scroll = true } = {}) {
   if (stage) stage.hidden = name !== 'materi';
   if (name === 'rekap') renderRekap();
   if (name === 'cetak') renderCetak();
+  if (name === 'pengguna') renderPengguna();
   if (name === 'beranda') renderBoard();
   if (scroll) window.scrollTo({ top: 0, behavior: reducedMotion() ? 'auto' : 'smooth' });
 }
@@ -292,7 +312,7 @@ function renderBoard() {
     if (cat) { setCategory(cat.id); switchTab('input'); }
   }));
 
-  $('#completeLabel').textContent = `${filled} dari 9 kelompok terisi · ${totalItems} entri tercatat`;
+  $('#completeLabel').textContent = `${filled} dari ${GROUPS.length} kelompok terisi · ${totalItems} entri tercatat`;
   const bar = $('#completeBar');
   const wrap = $('#completeBarWrap');
   wrap.setAttribute('aria-valuenow', String(pct));
@@ -514,7 +534,8 @@ function listHtml(items, emptyText) {
   return '<ul>' + items.map((it) => {
     const chips = [];
     for (const [k, v] of Object.entries(it.meta || {})) {
-      if (String(v).trim() !== '') chips.push(`${esc(k)}: ${esc(v)}`);
+      const chip = fmtMetaChip(k, v);
+      if (chip) chips.push(chip);
     }
     return `<li><b>${esc(it.judul)}</b>${it.tanggal ? ` — ${esc(it.tanggal)}` : ''}${chips.length ? ` (${chips.join('; ')})` : ''}${it.deskripsi ? `: ${esc(it.deskripsi)}` : ''}</li>`;
   }).join('') + '</ul>';
@@ -528,6 +549,23 @@ function suratTable(items, pihakLabel) {
     <td>${esc(it.meta?.perihal || it.judul)}</td>
   </tr>`).join('');
   return `<table><thead><tr><th>Nomor Surat</th><th>Tanggal</th><th>${esc(pihakLabel)}</th><th>Perihal</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function pbbSummary(items, year, kel) {
+  if (!items.length) return '';
+  const sum = (k) => items.reduce((a, it) => a + (Number(it.meta?.[k]) || 0), 0);
+  const sppt = sum('jumlah_sppt');
+  const target = sum('target');
+  const real = sum('realisasi');
+  const tung = sum('tunggakan');
+  const pct = target > 0 ? Math.round((real / target) * 100) : 0;
+  return `<p>Selama Tahun ${year}, Kelurahan ${esc(kel)} mencatat ${fmtNum(sppt)} SPPT PBB dengan target ${fmtRp(target)}, realisasi ${fmtRp(real)} (${fmtNum(pct)}%), dan tunggakan ${fmtRp(tung)}.</p>
+  <table><tbody>
+    <tr><td style="width:38%">Jumlah SPPT</td><td>${fmtNum(sppt)} SPPT</td></tr>
+    <tr><td>Target PBB</td><td>${fmtRp(target)}</td></tr>
+    <tr><td>Realisasi PBB</td><td>${fmtRp(real)} (${fmtNum(pct)}%)</td></tr>
+    <tr><td>Tunggakan</td><td>${fmtRp(tung)}</td></tr>
+  </tbody></table>`;
 }
 
 function renderCetak() {
@@ -578,7 +616,11 @@ function renderCetak() {
     </div>
     ${bab('I', 'Pendahuluan', `<p>Laporan Penyelenggaraan Pemerintahan Kelurahan ${esc(kel)}, Kecamatan ${esc(kec)}, Tahun ${y} ini disusun sebagai bentuk pertanggungjawaban penyelenggaraan pemerintahan kelurahan selama satu tahun anggaran. Laporan ini memuat monografi kelurahan, realisasi program kerja, pelayanan kepada masyarakat, pembangunan, pembinaan dan pemberdayaan masyarakat, kesehatan dan pendidikan, serta permasalahan, kendala, dan rencana tindak lanjut.</p><p>Laporan ini disampaikan kepada Camat sebagai bahan evaluasi dan pembinaan penyelenggaraan pemerintahan kelurahan.</p>`)}
     ${bab('II', 'Monografi Kelurahan', `<p>Data monografi Kelurahan ${esc(kel)} per 31 Desember ${y} adalah sebagai berikut:</p>${monografiTable}`)}
-    ${bab('III', 'Realisasi Program Kerja', listHtml(itemsOf('program_kerja'), 'Belum ada entri program kerja pada tahun laporan ini.'))}
+    ${bab('III', 'Realisasi Program Kerja', `
+      ${listHtml(itemsOf('program_kerja'), 'Belum ada entri program kerja pada tahun laporan ini.')}
+      <h3>Pajak Bumi dan Bangunan (PBB)</h3>
+      ${pbbSummary(itemsOf('pbb'), y, kel)}
+      ${listHtml(itemsOf('pbb'), 'Belum ada entri PBB pada tahun laporan ini.')}`)}
     ${bab('IV', 'Pelayanan', `
       <p>Selama Tahun ${y}, Kelurahan ${esc(kel)} mencatat ${fmtNum(itemsOf('pelayanan').length)} kegiatan pelayanan, ${fmtNum(masuk.length)} surat masuk, dan ${fmtNum(keluar.length)} surat keluar.</p>
       <h3>Pelayanan Administrasi</h3>
@@ -866,6 +908,143 @@ function bindEvents() {
   });
 }
 
+/* ---------- Portal login + peran (Supabase Auth) ---------- */
+let sbClient = null;
+let authUser = null;
+let authProfile = null;
+let authMode = 'login';
+const authEnforced = () => !!sbClient;
+const isAdmin = () => !authEnforced() || (authProfile && authProfile.role === 'admin' && authProfile.approved === true);
+
+async function ensureProfile(client, user) {
+  const { data } = await client.from('profiles').select('*').eq('id', user.id).maybeSingle();
+  if (data) return data;
+  const { count } = await client.from('profiles').select('*', { count: 'exact', head: true });
+  const first = (count || 0) === 0;
+  const row = { id: user.id, email: user.email || '', role: first ? 'admin' : 'user', approved: first };
+  const { data: ins, error } = await client.from('profiles').insert(row).select().single();
+  if (error) throw error;
+  return ins;
+}
+
+async function loadAuthProfile() {
+  authProfile = await ensureProfile(sbClient, authUser);
+}
+
+function showAuthState(which) {
+  $('#authForm').hidden = which !== 'form';
+  $('#authPending').hidden = which !== 'pending';
+  $('#authCheckEmail').hidden = which !== 'check-email';
+}
+
+function refreshAuthUI() {
+  const chip = $('#userChip');
+  if (authUser && authProfile) {
+    $('#userChipText').textContent = `${authUser.email} · ${authProfile.role === 'admin' ? 'Admin' : 'User'}`;
+    chip.hidden = false;
+  } else {
+    chip.hidden = true;
+  }
+  const admin = isAdmin();
+  $('#tabbtn-cetak').style.display = admin ? '' : 'none';
+  $('#tabbtn-pengguna').style.display = admin ? '' : 'none';
+  if (!admin && (state.tab === 'cetak' || state.tab === 'pengguna')) switchTab('beranda', { scroll: false });
+  const idForm = $('#identityForm');
+  $$('input, button[type="submit"]', idForm).forEach((el) => { el.disabled = !admin; });
+  $('#importBtn').disabled = !admin;
+  const note = $('#identityAdminNote');
+  if (note) note.hidden = admin;
+}
+
+function applyAuthGate() {
+  const locked = authEnforced() && !(authUser && authProfile && authProfile.approved);
+  document.body.classList.toggle('locked', locked);
+  if (!authUser) { showAuthState('form'); return; }
+  if (!authProfile || !authProfile.approved) { showAuthState('pending'); return; }
+  refreshAuthUI();
+}
+
+async function renderPengguna() {
+  const list = $('#userList');
+  if (!sbClient || !isAdmin()) { list.innerHTML = '<p><i>Hanya admin yang bisa melihat daftar pengguna.</i></p>'; return; }
+  const { data, error } = await sbClient.from('profiles').select('*').order('created_at', { ascending: true });
+  if (error) { list.innerHTML = `<p><i>Gagal memuat pengguna: ${esc(error.message)}</i></p>`; return; }
+  if (!data.length) { list.innerHTML = '<p><i>Belum ada pengguna.</i></p>'; return; }
+  list.innerHTML = data.map((p) => `
+    <div class="user-row" data-uid="${esc(p.id)}">
+      <div class="user-row__who">
+        <div class="user-row__email">${esc(p.email)}</div>
+        <div class="user-row__meta">Terdaftar ${esc(String(p.created_at || '').slice(0, 10))}${p.id === (authUser && authUser.id) ? ' · ini kamu' : ''}</div>
+      </div>
+      <span class="pill ${p.approved ? 'pill--ok' : 'pill--wait'}">${p.approved ? 'Disetujui' : 'Menunggu'}</span>
+      <label>Peran
+        <select data-role>
+          <option value="user" ${p.role === 'user' ? 'selected' : ''}>User</option>
+          <option value="admin" ${p.role === 'admin' ? 'selected' : ''}>Admin</option>
+        </select>
+      </label>
+      <label><input type="checkbox" data-approved ${p.approved ? 'checked' : ''}> Disetujui</label>
+      <button class="btn btn--sm" type="button" data-save>Simpan</button>
+    </div>`).join('');
+  $$('[data-save]', list).forEach((btn) => btn.addEventListener('click', async () => {
+    const row = btn.closest('.user-row');
+    const uid = row.dataset.uid;
+    const role = row.querySelector('[data-role]').value;
+    const approved = row.querySelector('[data-approved]').checked;
+    btn.disabled = true;
+    const { error: err } = await sbClient.from('profiles').update({ role, approved }).eq('id', uid);
+    btn.disabled = false;
+    if (err) { toast('Gagal menyimpan: ' + err.message); return; }
+    toast('Pengguna diperbarui.');
+    if (uid === (authUser && authUser.id)) { await loadAuthProfile(); applyAuthGate(); }
+    renderPengguna();
+  }));
+}
+
+function bindAuthEvents() {
+  $('#authForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const msg = $('#authMsg');
+    msg.textContent = '';
+    msg.classList.remove('ok');
+    if (!sbClient) { msg.textContent = 'Login memakai Supabase — server tidak terjangkau saat ini.'; return; }
+    const email = $('#authEmail').value.trim();
+    const pw = $('#authPassword').value;
+    if (!email || pw.length < 6) { msg.textContent = 'Isi email yang benar dan kata sandi minimal 6 karakter.'; return; }
+    const btn = $('#authSubmitBtn');
+    btn.disabled = true;
+    try {
+      if (authMode === 'login') {
+        const { error } = await sbClient.auth.signInWithPassword({ email, password: pw });
+        if (error) throw error;
+      } else {
+        const { data, error } = await sbClient.auth.signUp({ email, password: pw, options: { emailRedirectTo: location.origin } });
+        if (error) throw error;
+        if (data.user && !data.session) showAuthState('check-email');
+      }
+    } catch (err) {
+      msg.textContent = err.message || 'Gagal. Coba lagi.';
+    } finally {
+      btn.disabled = false;
+    }
+  });
+  $('#authToggleBtn').addEventListener('click', () => {
+    authMode = authMode === 'login' ? 'register' : 'login';
+    $('#authSubmitBtn').textContent = authMode === 'login' ? 'Masuk' : 'Daftar';
+    $('#authToggleBtn').textContent = authMode === 'login' ? 'Belum punya akun? Daftar' : 'Sudah punya akun? Masuk';
+    $('#authPassword').autocomplete = authMode === 'login' ? 'current-password' : 'new-password';
+    $('#authMsg').textContent = '';
+  });
+  const doLogout = async () => {
+    if (sbClient) await sbClient.auth.signOut();
+    authUser = null; authProfile = null;
+    applyAuthGate();
+  };
+  $('#logoutBtn').addEventListener('click', doLogout);
+  $('#authPendingLogoutBtn').addEventListener('click', doLogout);
+  $('#authCheckEmailBackBtn').addEventListener('click', () => showAuthState('form'));
+}
+
 /* ---------- Boot ---------- */
 function buildYearOptions() {
   const now = new Date().getFullYear();
@@ -892,6 +1071,7 @@ async function boot() {
   if (url && key) {
     try {
       const client = await loadSupabaseClient(url, key);
+      sbClient = client;
       state.store = createSupabaseStore(client);
       setModeBadge('supabase');
     } catch (e) {
@@ -900,9 +1080,37 @@ async function boot() {
   }
 
   bindEvents();
-  await loadYearData();
-  renderRekap();
-  renderCetak();
+  bindAuthEvents();
+
+  if (authEnforced()) {
+    const { data: { session } } = await sbClient.auth.getSession();
+    if (session) {
+      authUser = session.user;
+      try { await loadAuthProfile(); } catch (e) { toast('Gagal memuat profil: ' + e.message); }
+    }
+    sbClient.auth.onAuthStateChange(async (_event, sess) => {
+      authUser = sess ? sess.user : null;
+      authProfile = null;
+      if (authUser) { try { await loadAuthProfile(); } catch (e) { toast('Gagal memuat profil: ' + e.message); } }
+      applyAuthGate();
+      if (authUser && authProfile && authProfile.approved) {
+        await loadYearData();
+        renderRekap();
+        renderCetak();
+      }
+    });
+    applyAuthGate();
+    if (authUser && authProfile && authProfile.approved) {
+      await loadYearData();
+      renderRekap();
+      renderCetak();
+    }
+  } else {
+    document.body.classList.remove('locked');
+    await loadYearData();
+    renderRekap();
+    renderCetak();
+  }
   watchReveals();
   startRoadmapLoop();
 }
