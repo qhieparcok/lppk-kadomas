@@ -1,5 +1,5 @@
 /* ============================================================
-   Pengelola Laporan Tahunan Lurah — LPPK (versi publik mandiri)
+   Pengelola Laporan Tahunan Lurah (versi publik mandiri)
    Static site, tanpa build step.
    Data: Supabase (bila config.js terisi) atau localStorage.
    Scroll: satu rAF loop, pola engine Scrolltide (tanpa Lenis).
@@ -111,17 +111,17 @@ const MONOGRAFI_FIELDS = [
 
 const ROADMAP_STEPS = [
   { kicker: 'Tahap 1 · Oktober – November', title: 'Persiapan',
-    body: 'Susun tim penyusun, tetapkan format dan template LPPK, dan inventarisasi data yang sudah ada.' },
+    body: 'Susun tim penyusun, tetapkan format dan template Laporan Tahunan, dan inventarisasi data yang sudah ada.' },
   { kicker: 'Tahap 2 · November – Desember', title: 'Pengumpulan Berjalan',
     body: 'Kumpulkan data bulanan: surat masuk dan keluar, pelayanan, dan kependudukan. Tutup monografi per 31 Desember.' },
   { kicker: 'Tahap 3 · Januari', title: 'Rekap Akhir & Surat',
     body: 'Rekap seluruh data tahun berjalan, verifikasi dan validasi, hitung capaian terhadap target, dan rekap buku agenda surat.' },
   { kicker: 'Tahap 4 · Februari', title: 'Penyusunan Draf',
-    body: 'Tulis draf LPPK BAB I–IX dari data yang sudah direkap, lalu review internal bersama Lurah.' },
+    body: 'Tulis draf Laporan Tahunan BAB I–IX dari data yang sudah direkap, lalu review internal bersama Lurah.' },
   { kicker: 'Tahap 5 · Akhir Februari – Awal Maret', title: 'Pemeriksaan & Pengesahan',
     body: 'Pemeriksaan akhir, koreksi, kemudian pengesahan dan tanda tangan oleh Lurah.' },
   { kicker: 'Tahap 6 · Maret', title: 'Penyerahan ke Camat',
-    body: 'Serahkan LPPK ke Camat. Batas waktu: paling lambat 3 bulan setelah tahun anggaran berakhir.' },
+    body: 'Serahkan Laporan Tahunan ke Camat. Batas waktu: paling lambat 3 bulan setelah tahun anggaran berakhir.' },
 ];
 
 /* ---------- State ---------- */
@@ -138,9 +138,17 @@ const state = {
 
 /* ---------- Data layer ---------- */
 function createLocalStore() {
-  const key = (year, kind) => `lppk:${year}:${kind}`;
+  const key = (year, kind) => `laporan-tahunan:${year}:${kind}`;
+  const oldKey = (year, kind) => `lppk:${year}:${kind}`; // kunci lama, hanya untuk migrasi sekali baca
   const read = (year, kind, fallback) => {
-    try { const raw = localStorage.getItem(key(year, kind)); return raw ? JSON.parse(raw) : fallback; }
+    try {
+      let raw = localStorage.getItem(key(year, kind));
+      if (!raw) { // migrasi: data lama (mode lokal) ikut pindah ke kunci baru
+        raw = localStorage.getItem(oldKey(year, kind));
+        if (raw) { localStorage.setItem(key(year, kind), raw); localStorage.removeItem(oldKey(year, kind)); }
+      }
+      return raw ? JSON.parse(raw) : fallback;
+    }
     catch { return fallback; }
   };
   const write = (year, kind, val) => localStorage.setItem(key(year, kind), JSON.stringify(val));
@@ -497,7 +505,7 @@ function renderRekap() {
   }));
 }
 
-/* ---------- Render: Cetak LPPK ---------- */
+/* ---------- Render: Cetak Laporan Tahunan ---------- */
 function itemsOf(catId) {
   return state.items.filter((i) => i.kategori === catId);
 }
@@ -555,8 +563,8 @@ function renderCetak() {
   const masuk = itemsOf('surat_masuk');
   const keluar = itemsOf('surat_keluar');
 
-  $('#lppkDoc').innerHTML = `
-    <div class="lppk-kop">
+  $('#laporanDoc').innerHTML = `
+    <div class="laporan-kop">
       <img class="kop-logo" src="logo-pandeglang.png" alt="Lambang Kabupaten Pandeglang">
       <div class="kop-text">
         <div class="kop-1">Pemerintah Kabupaten Pandeglang</div>
@@ -564,11 +572,11 @@ function renderCetak() {
         <div class="kop-3">Kecamatan ${esc(kec)}</div>
       </div>
     </div>
-    <div class="lppk-title">
+    <div class="laporan-title">
       <h1>Laporan Penyelenggaraan Pemerintahan Kelurahan</h1>
-      <p>( LPPK ) &nbsp; Tahun ${y}</p>
+      <p>( Laporan Tahunan ) &nbsp; Tahun ${y}</p>
     </div>
-    ${bab('I', 'Pendahuluan', `<p>Laporan Penyelenggaraan Pemerintahan Kelurahan (LPPK) Kelurahan ${esc(kel)}, Kecamatan ${esc(kec)}, Tahun ${y} ini disusun sebagai bentuk pertanggungjawaban penyelenggaraan pemerintahan kelurahan selama satu tahun anggaran. Laporan ini memuat monografi kelurahan, realisasi program kerja, pelayanan kepada masyarakat, pembangunan, pembinaan dan pemberdayaan masyarakat, kesehatan dan pendidikan, serta permasalahan, kendala, dan rencana tindak lanjut.</p><p>Laporan ini disampaikan kepada Camat sebagai bahan evaluasi dan pembinaan penyelenggaraan pemerintahan kelurahan.</p>`)}
+    ${bab('I', 'Pendahuluan', `<p>Laporan Penyelenggaraan Pemerintahan Kelurahan ${esc(kel)}, Kecamatan ${esc(kec)}, Tahun ${y} ini disusun sebagai bentuk pertanggungjawaban penyelenggaraan pemerintahan kelurahan selama satu tahun anggaran. Laporan ini memuat monografi kelurahan, realisasi program kerja, pelayanan kepada masyarakat, pembangunan, pembinaan dan pemberdayaan masyarakat, kesehatan dan pendidikan, serta permasalahan, kendala, dan rencana tindak lanjut.</p><p>Laporan ini disampaikan kepada Camat sebagai bahan evaluasi dan pembinaan penyelenggaraan pemerintahan kelurahan.</p>`)}
     ${bab('II', 'Monografi Kelurahan', `<p>Data monografi Kelurahan ${esc(kel)} per 31 Desember ${y} adalah sebagai berikut:</p>${monografiTable}`)}
     ${bab('III', 'Realisasi Program Kerja', listHtml(itemsOf('program_kerja'), 'Belum ada entri program kerja pada tahun laporan ini.'))}
     ${bab('IV', 'Pelayanan', `
@@ -589,8 +597,8 @@ function renderCetak() {
       <h3>Rencana Tindak Lanjut</h3>
       ${listHtml(itemsOf('tindak_lanjut'), 'Belum ada entri rencana tindak lanjut pada tahun laporan ini.')}`)}
     <h2>Penutup</h2>
-    <p>Demikian Laporan Penyelenggaraan Pemerintahan Kelurahan (LPPK) Tahun ${y} Kelurahan ${esc(kel)}, Kecamatan ${esc(kec)} ini disusun dengan sebenar-benarnya. Atas perhatian dan pembinaan Bapak/Ibu Camat, kami mengucapkan terima kasih.</p>
-    <div class="lppk-sign">
+    <p>Demikian Laporan Penyelenggaraan Pemerintahan Kelurahan Tahun ${y} Kelurahan ${esc(kel)}, Kecamatan ${esc(kec)} ini disusun dengan sebenar-benarnya. Atas perhatian dan pembinaan Bapak/Ibu Camat, kami mengucapkan terima kasih.</p>
+    <div class="laporan-sign">
       <div>
         <p>Mengetahui,<br>Lurah ${esc(kel)}</p>
         <div class="sign-space"></div>
@@ -694,13 +702,13 @@ function startRoadmapLoop() {
 /* ---------- Ekspor / impor cadangan ---------- */
 function exportBackup() {
   const payload = {
-    app: 'lppk-publik', version: 1, year: state.year,
+    app: 'laporan-tahunan', version: 1, year: state.year,
     settings: state.settings, monografi: state.monografi, items: state.items,
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `lppk-cadangan-${state.year}.json`;
+  a.download = `laporan-tahunan-cadangan-${state.year}.json`;
   a.click();
   URL.revokeObjectURL(a.href);
   toast('Cadangan diunduh.');
@@ -878,7 +886,7 @@ async function boot() {
   state.store = createLocalStore();
   setModeBadge('local');
 
-  const cfg = window.LPPK_CONFIG || {};
+  const cfg = window.LAPORAN_CONFIG || {};
   const url = String(cfg.SUPABASE_URL || '').trim();
   const key = String(cfg.SUPABASE_ANON_KEY || '').trim();
   if (url && key) {

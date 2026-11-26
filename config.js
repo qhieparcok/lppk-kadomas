@@ -15,7 +15,7 @@
    di file ini: anon key saja sudah cukup dan aman untuk dibagikan.
    ============================================================ */
 
-window.LPPK_CONFIG = {
+window.LAPORAN_CONFIG = {
   SUPABASE_URL: "https://dfecgipnzzxrasqyvkne.supabase.co",
   SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmZWNnaXBuenp4cmFzcXl2a25lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU1MTQ4MDksImV4cCI6MjExMTA5MDgwOX0.YC7F2vK6SWmFYTBb0_zxv6CAvPQgFzW6t4l82wv1LFE"
 };

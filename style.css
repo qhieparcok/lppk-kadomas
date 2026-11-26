@@ -1,5 +1,5 @@
 /* ============================================================
-   Pengelola Laporan Tahunan Lurah — LPPK
+   Pengelola Laporan Tahunan Lurah — Laporan Tahunan
    Scrolltide house style: kertas hangat, satu aksen hijau resmi,
    Inter + Instrument Serif italic + JetBrains Mono.
    ============================================================ */
@@ -382,37 +382,37 @@ main { padding-bottom: 80px; }
 .bar-row__n { font-family: var(--font-mono); font-size: 13px; text-align: right; font-variant-numeric: tabular-nums; }
 @media (max-width: 560px) { .bar-row { grid-template-columns: 120px 1fr 36px; } }
 
-/* ---------- Cetak / dokumen LPPK ---------- */
-.lppk-doc {
+/* ---------- Cetak / dokumen Laporan Tahunan ---------- */
+.laporan-doc {
   background: #fff; color: #111;
   border: 1px solid var(--line); border-radius: 8px;
   padding: clamp(24px, 5vw, 64px);
   font-family: "Times New Roman", Times, serif;
   font-size: 15px; line-height: 1.6;
 }
-.lppk-doc h1, .lppk-doc h2, .lppk-doc h3 { font-family: "Times New Roman", Times, serif; letter-spacing: 0; }
-.lppk-kop { display: flex; align-items: center; gap: 16px; border-bottom: 3px double #111; padding-bottom: 12px; margin-bottom: 24px; }
-.lppk-kop .kop-logo { width: 76px; height: auto; flex: none; }
-.lppk-kop .kop-text { flex: 1; text-align: center; }
-.lppk-kop .kop-1 { font-size: 14px; letter-spacing: 0.06em; text-transform: uppercase; }
-.lppk-kop .kop-2 { font-size: 19px; font-weight: 700; text-transform: uppercase; margin-top: 2px; }
-.lppk-kop .kop-3 { font-size: 13px; margin-top: 2px; }
-.lppk-title { text-align: center; margin: 28px 0; }
-.lppk-title h1 { font-size: 19px; text-transform: uppercase; text-decoration: underline; }
-.lppk-title p { font-size: 14px; margin-top: 6px; }
-.lppk-doc h2 { font-size: 16px; text-transform: uppercase; margin: 26px 0 8px; }
-.lppk-doc h3 { font-size: 15px; margin: 16px 0 6px; }
-.lppk-doc p { margin: 6px 0; text-align: justify; }
-.lppk-doc ul, .lppk-doc ol { margin: 6px 0 6px 22px; padding: 0; }
-.lppk-doc li { margin: 3px 0; }
-.lppk-doc table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
-.lppk-doc th, .lppk-doc td { border: 1px solid #999; padding: 6px 9px; text-align: left; vertical-align: top; }
-.lppk-doc th { background: #f0f0f0; }
-.lppk-sign { display: flex; justify-content: space-between; gap: 24px; margin-top: 48px; page-break-inside: avoid; }
-.lppk-sign > div { text-align: center; width: 45%; }
-.lppk-sign .sign-space { height: 84px; }
-.lppk-sign .sign-name { font-weight: 700; text-decoration: underline; }
-.lppk-note {
+.laporan-doc h1, .laporan-doc h2, .laporan-doc h3 { font-family: "Times New Roman", Times, serif; letter-spacing: 0; }
+.laporan-kop { display: flex; align-items: center; gap: 16px; border-bottom: 3px double #111; padding-bottom: 12px; margin-bottom: 24px; }
+.laporan-kop .kop-logo { width: 76px; height: auto; flex: none; }
+.laporan-kop .kop-text { flex: 1; text-align: center; }
+.laporan-kop .kop-1 { font-size: 14px; letter-spacing: 0.06em; text-transform: uppercase; }
+.laporan-kop .kop-2 { font-size: 19px; font-weight: 700; text-transform: uppercase; margin-top: 2px; }
+.laporan-kop .kop-3 { font-size: 13px; margin-top: 2px; }
+.laporan-title { text-align: center; margin: 28px 0; }
+.laporan-title h1 { font-size: 19px; text-transform: uppercase; text-decoration: underline; }
+.laporan-title p { font-size: 14px; margin-top: 6px; }
+.laporan-doc h2 { font-size: 16px; text-transform: uppercase; margin: 26px 0 8px; }
+.laporan-doc h3 { font-size: 15px; margin: 16px 0 6px; }
+.laporan-doc p { margin: 6px 0; text-align: justify; }
+.laporan-doc ul, .laporan-doc ol { margin: 6px 0 6px 22px; padding: 0; }
+.laporan-doc li { margin: 3px 0; }
+.laporan-doc table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 14px; }
+.laporan-doc th, .laporan-doc td { border: 1px solid #999; padding: 6px 9px; text-align: left; vertical-align: top; }
+.laporan-doc th { background: #f0f0f0; }
+.laporan-sign { display: flex; justify-content: space-between; gap: 24px; margin-top: 48px; page-break-inside: avoid; }
+.laporan-sign > div { text-align: center; width: 45%; }
+.laporan-sign .sign-space { height: 84px; }
+.laporan-sign .sign-name { font-weight: 700; text-decoration: underline; }
+.laporan-note {
   font-family: var(--font-ui); font-size: 13px; color: var(--muted);
   background: var(--accent-soft); border: 1px solid var(--accent-tint);
   border-radius: 12px; padding: 12px 16px; margin-bottom: 16px;
@@ -511,13 +511,13 @@ footer .mono { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0
   *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }
 
-/* ---------- Print: hanya dokumen LPPK ---------- */
+/* ---------- Print: hanya dokumen Laporan Tahunan ---------- */
 @media print {
   body { background: #fff; }
   .topbar, .tabs, footer, .toast, .no-print { display: none !important; }
   main { padding-bottom: 0; }
   .tab-panel { display: none !important; padding-top: 0; }
   #tab-cetak { display: block !important; }
-  #tab-cetak .section-head, #tab-cetak .btn-row, #tab-cetak .lppk-note { display: none !important; }
-  .lppk-doc { border: 0; border-radius: 0; padding: 0; }
+  #tab-cetak .section-head, #tab-cetak .btn-row, #tab-cetak .laporan-note { display: none !important; }
+  .laporan-doc { border: 0; border-radius: 0; padding: 0; }
 }

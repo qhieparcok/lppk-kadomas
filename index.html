@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pengelola Laporan Tahunan — Kelurahan Kadomas</title>
-<meta name="description" content="Aplikasi pengelola Laporan Penyelenggaraan Pemerintahan Kelurahan (LPPK) Kelurahan Kadomas: input data, rekap, dan cetak laporan tahunan untuk Sekretaris Lurah.">
+<meta name="description" content="Aplikasi pengelola Laporan Tahunan Kelurahan Kadomas: input data, rekap, dan cetak laporan tahunan untuk Sekretaris Lurah.">
 <script>document.documentElement.classList.add('js')</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,8 +16,8 @@
 <header class="topbar">
   <div class="wrap topbar__in">
     <div class="wordmark">
-      <span class="wordmark__mark">LPPK</span>
-      <span class="wordmark__sub">Kelurahan Kadomas · Laporan Tahunan</span>
+      <span class="wordmark__mark">Laporan Tahunan</span>
+      <span class="wordmark__sub">Kelurahan Kadomas</span>
     </div>
     <div class="topbar__spacer"></div>
     <div class="year-pick">
@@ -33,7 +33,7 @@
     <button class="tab-btn" role="tab" id="tabbtn-beranda" aria-controls="tab-beranda" aria-selected="true" data-tab="beranda"><span class="tab-num">01</span>Beranda</button>
     <button class="tab-btn" role="tab" id="tabbtn-input" aria-controls="tab-input" aria-selected="false" data-tab="input"><span class="tab-num">02</span>Input Data</button>
     <button class="tab-btn" role="tab" id="tabbtn-rekap" aria-controls="tab-rekap" aria-selected="false" data-tab="rekap"><span class="tab-num">03</span>Rekap</button>
-    <button class="tab-btn" role="tab" id="tabbtn-cetak" aria-controls="tab-cetak" aria-selected="false" data-tab="cetak"><span class="tab-num">04</span>Cetak LPPK</button>
+    <button class="tab-btn" role="tab" id="tabbtn-cetak" aria-controls="tab-cetak" aria-selected="false" data-tab="cetak"><span class="tab-num">04</span>Cetak Laporan Tahunan</button>
     <button class="tab-btn" role="tab" id="tabbtn-materi" aria-controls="tab-materi" aria-selected="false" data-tab="materi"><span class="tab-num">05</span>Materi</button>
   </div>
 </nav>
@@ -45,7 +45,7 @@
     <p class="eyebrow" data-reveal>Laporan Penyelenggaraan Pemerintahan Kelurahan</p>
     <h1 class="display" data-reveal style="--i:1">Laporan tahunan,<br>tersusun <em>runtut.</em></h1>
     <p class="lede" data-reveal style="--i:2; margin-top:18px">
-      Satu tempat untuk menyusun LPPK dari awal sampai siap diserahkan ke Camat.
+      Satu tempat untuk menyusun Laporan Tahunan dari awal sampai siap diserahkan ke Camat.
       Isi data sepanjang tahun, pantau kelengkapan, lalu cetak dokumen resminya.
       Tanpa realisasi keuangan — keuangan dikelola langsung oleh kecamatan.
     </p>
@@ -72,14 +72,14 @@
       <article class="card card--flat step-card" data-reveal style="--i:3">
         <span class="step-card__num">LANGKAH 04</span>
         <h3>Cetak &amp; Serah</h3>
-        <p>Dokumen LPPK BAB I–IX lengkap dengan kop dan lembar tanda tangan, siap cetak dan diserahkan ke Camat.</p>
-        <button class="step-card__go" data-goto="cetak">Buka Cetak LPPK →</button>
+        <p>Dokumen Laporan Tahunan BAB I–IX lengkap dengan kop dan lembar tanda tangan, siap cetak dan diserahkan ke Camat.</p>
+        <button class="step-card__go" data-goto="cetak">Buka Cetak Laporan Tahunan →</button>
       </article>
     </div>
 
     <div class="section-head" data-reveal>
       <h2>Kelengkapan laporan <em>tahun ini</em></h2>
-      <p> Sembilan kelompok data LPPK. Kelompok terisi bila monografi sudah disimpan, atau sudah ada minimal satu entri pada kelompok itu.</p>
+      <p> Sembilan kelompok data Laporan Tahunan. Kelompok terisi bila monografi sudah disimpan, atau sudah ada minimal satu entri pada kelompok itu.</p>
     </div>
 
     <div class="card" data-reveal>
@@ -97,7 +97,7 @@
 
     <div class="section-head" data-reveal id="identity">
       <h2>Identitas kelurahan &amp; <em>penandatangan</em></h2>
-      <p>Identitas ini tampil di kop dan lembar tanda tangan dokumen LPPK. Tersimpan per tahun laporan.</p>
+      <p>Identitas ini tampil di kop dan lembar tanda tangan dokumen Laporan Tahunan. Tersimpan per tahun laporan.</p>
     </div>
 
     <form class="card" id="identityForm" data-reveal>
@@ -236,7 +236,7 @@
     <h2 class="display" data-reveal style="--i:1; font-size:clamp(32px,4.5vw,52px)">Ringkasan <em>sebelum disusun.</em></h2>
     <p class="lede" data-reveal style="--i:2; margin-top:14px">
       Periksa kembali apa yang sudah terkumpul: berapa entri per kategori, berapa surat
-      masuk dan keluar, dan seberapa lengkap sembilan kelompok data LPPK.
+      masuk dan keluar, dan seberapa lengkap sembilan kelompok data Laporan Tahunan.
     </p>
 
     <div class="grid grid--4" style="margin-top:32px">
@@ -261,7 +261,7 @@
     <div class="grid grid--2" style="margin-top:16px">
       <article class="card" data-reveal>
         <h3>Capaian kelengkapan</h3>
-        <p class="card__sub">Sembilan kelompok data LPPK yang sudah terisi.</p>
+        <p class="card__sub">Sembilan kelompok data Laporan Tahunan yang sudah terisi.</p>
         <div class="donut-wrap" style="margin-top:20px">
           <svg class="donut" viewBox="0 0 168 168" role="img" aria-label="Donat capaian kelengkapan">
             <circle class="donut__track" cx="84" cy="84" r="70"></circle>
@@ -285,7 +285,7 @@
 
   <!-- ================= CETAK ================= -->
   <section class="tab-panel" id="tab-cetak" role="tabpanel" aria-labelledby="tabbtn-cetak" hidden>
-    <p class="eyebrow" data-reveal>Cetak LPPK · Tahun <span class="yearEcho"></span></p>
+    <p class="eyebrow" data-reveal>Cetak Laporan Tahunan · Tahun <span class="yearEcho"></span></p>
     <h2 class="display" data-reveal style="--i:1; font-size:clamp(32px,4.5vw,52px)">Dokumen <em>siap serah.</em></h2>
     <p class="lede" data-reveal style="--i:2; margin-top:14px">
       Dokumen di bawah ini disusun otomatis dari data yang sudah diisi — kop kelurahan,
@@ -295,12 +295,12 @@
       <button class="btn" type="button" id="printBtn">Cetak / simpan PDF</button>
       <button class="btn btn--ghost" type="button" data-goto="input">Lengkapi data dulu</button>
     </div>
-    <p class="lppk-note no-print" data-reveal>
+    <p class="laporan-note no-print" data-reveal>
       Di dialog cetak, pilih “Save as PDF” untuk menyimpan sebagai PDF. Periksa kembali nama,
       NIP penandatangan, dan isi tiap bab sebelum diserahkan ke Camat.
     </p>
 
-    <article class="lppk-doc" id="lppkDoc" data-reveal aria-label="Dokumen LPPK"><!-- diisi JS --></article>
+    <article class="laporan-doc" id="laporanDoc" data-reveal aria-label="Dokumen Laporan Tahunan"><!-- diisi JS --></article>
   </section>
 
   <!-- ================= MATERI ================= -->
@@ -309,13 +309,13 @@
     <h2 class="display" data-reveal style="--i:1; font-size:clamp(32px,4.5vw,52px)">Bekal <em>menyusun laporan.</em></h2>
     <p class="lede" data-reveal style="--i:2; margin-top:14px">
       Tiga materi rujukan: syarat menjadi Sekretaris Lurah, data laporan yang harus
-      dikumpulkan, dan roadmap penyusunan LPPK dari Oktober sampai Maret.
+      dikumpulkan, dan roadmap penyusunan Laporan Tahunan dari Oktober sampai Maret.
     </p>
 
     <nav class="materi-nav" data-reveal aria-label="Navigasi materi">
       <a href="#materi-syarat">Syarat Sekretaris Lurah</a>
       <a href="#materi-data">Data Laporan</a>
-      <a href="#materi-roadmap">Roadmap LPPK</a>
+      <a href="#materi-roadmap">Roadmap Laporan Tahunan</a>
     </nav>
 
     <div class="section-head" id="materi-syarat" data-reveal>
@@ -341,7 +341,7 @@
           <div class="materi-item"><span class="materi-item__n">B</span><div><b>Membantu Lurah</b><p>Mengurus administrasi, perencanaan, dan tata usaha kelurahan sehari-hari.</p></div></div>
           <div class="materi-item"><span class="materi-item__n">C</span><div><b>Mengoordinasikan seksi</b><p>Mengkoordinasikan seksi-seksi dan staf dalam pelaksanaan program kerja.</p></div></div>
           <div class="materi-item"><span class="materi-item__n">D</span><div><b>Mengelola surat dan arsip</b><p>Buku agenda surat masuk dan keluar, kearsipan, dan pelayanan administrasi.</p></div></div>
-          <div class="materi-item"><span class="materi-item__n">E</span><div><b>Menyusun laporan</b><p>Laporan bulanan ke Camat dan Laporan Penyelenggaraan Pemerintahan Kelurahan (LPPK) tahunan.</p></div></div>
+          <div class="materi-item"><span class="materi-item__n">E</span><div><b>Menyusun laporan</b><p>Laporan bulanan ke Camat dan Laporan Penyelenggaraan Pemerintahan Kelurahan tahunan.</p></div></div>
         </div>
         <hr class="rule" style="margin:20px 0">
         <p style="font-size:14px; color:var(--muted)"><b style="color:var(--ink)">Dasar hukum:</b> UU No. 23 Tahun 2014 tentang Pemerintahan Daerah, PP No. 17 Tahun 2018 tentang Kecamatan, UU No. 20 Tahun 2023 tentang ASN.</p>
@@ -365,7 +365,7 @@
           <div class="materi-item"><span class="materi-item__n">6</span><div><b>Ekonomi</b><p>UMKM, pasar, dan koperasi.</p></div></div>
           <div class="materi-item"><span class="materi-item__n">7</span><div><b>Infrastruktur</b><p>Jalan, drainase, penerangan jalan, dan air bersih.</p></div></div>
           <div class="materi-item"><span class="materi-item__n">8</span><div><b>Kelembagaan</b><p>RT/RW, LPM, PKK, dan Karang Taruna.</p></div></div>
-          <div class="materi-item"><span class="materi-item__n">9</span><div><b>Keuangan</b><p>Dicatat kecamatan — tidak masuk LPPK kelurahan.</p></div></div>
+          <div class="materi-item"><span class="materi-item__n">9</span><div><b>Keuangan</b><p>Dicatat kecamatan — tidak masuk Laporan Tahunan kelurahan.</p></div></div>
           <div class="materi-item"><span class="materi-item__n">10</span><div><b>Pelayanan &amp; kegiatan</b><p>Surat masuk dan keluar, pelayanan KTP/KK, dan kegiatan kemasyarakatan.</p></div></div>
         </div>
       </article>
@@ -373,7 +373,7 @@
         <h3>Laporan yang dihasilkan</h3>
         <div class="materi-list" style="margin-top:16px">
           <div class="materi-item"><span class="materi-item__n">•</span><div><b>Laporan bulanan ke Camat</b><p>Rekap kegiatan, pelayanan, dan surat masuk/keluar setiap bulan.</p></div></div>
-          <div class="materi-item"><span class="materi-item__n">•</span><div><b>LPPK — Laporan Penyelenggaraan Pemerintahan Kelurahan</b><p>Laporan tahunan yang diserahkan ke Camat, paling lambat 3 bulan setelah tahun anggaran berakhir.</p></div></div>
+          <div class="materi-item"><span class="materi-item__n">•</span><div><b>Laporan Penyelenggaraan Pemerintahan Kelurahan</b><p>Laporan tahunan yang diserahkan ke Camat, paling lambat 3 bulan setelah tahun anggaran berakhir.</p></div></div>
           <div class="materi-item"><span class="materi-item__n">•</span><div><b>LAKIP</b><p>Laporan Akuntabilitas Kinerja Instansi Pemerintah kelurahan.</p></div></div>
           <div class="materi-item"><span class="materi-item__n">•</span><div><b>Laporan keuangan</b><p>Disusun dan dikelola oleh kecamatan.</p></div></div>
         </div>
@@ -384,7 +384,7 @@
 
     <!-- ============ ROADMAP: pinned self-drawing stage ============ -->
     <div class="section-head" id="materi-roadmap" data-reveal style="margin-top:64px">
-      <h2>Roadmap penyusunan <em>LPPK</em></h2>
+      <h2>Roadmap penyusunan <em>Laporan Tahunan</em></h2>
       <p>Enam tahap dari Oktober sampai Maret. Gulir ke bawah — jalurnya menggambar dirinya sendiri mengikuti guliranmu.</p>
     </div>
   </section>
@@ -398,7 +398,7 @@
         <h2 id="roadmap-title">Dari Oktober <em style="font-family:var(--font-serif); font-style:italic; font-weight:400; color:var(--accent-deep)">sampai Maret.</em></h2>
         <p class="stage__readout" aria-live="off">TAHAP <b id="roadmapStepNum">1</b>/6 · JALUR <b id="roadmapPct">0%</b></p>
       </div>
-      <svg class="roadmap-svg" viewBox="0 0 1200 640" role="img" aria-label="Jalur enam tahap penyusunan LPPK, dari Persiapan sampai Penyerahan ke Camat.">
+      <svg class="roadmap-svg" viewBox="0 0 1200 640" role="img" aria-label="Jalur enam tahap penyusunan Laporan Tahunan, dari Persiapan sampai Penyerahan ke Camat.">
         <g class="ghost" aria-hidden="true">
           <path d="M 90 70 H 1110" />
           <path d="M 1110 70 C 1175 70 1175 170 1110 170 H 90" />
@@ -437,7 +437,7 @@
       <div class="step-panel" aria-live="polite">
         <div class="step-panel__kicker" id="roadmapKicker">Tahap 1 · Oktober – November</div>
         <h3 id="roadmapStepTitle">Persiapan</h3>
-        <p id="roadmapStepBody">Susun tim penyusun, tetapkan format dan template LPPK, dan inventarisasi data yang sudah ada.</p>
+        <p id="roadmapStepBody">Susun tim penyusun, tetapkan format dan template Laporan Tahunan, dan inventarisasi data yang sudah ada.</p>
         <div class="step-bars" id="roadmapBars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
       </div>
       <p class="stage__hint">↓ Terus gulir — jalur tergambar tahap demi tahap ↓</p>
@@ -448,7 +448,7 @@
 <footer>
   <div class="wrap">
     <div>
-      <span class="mono">LPPK · Kelurahan Kadomas</span><br>
+      <span class="mono">Laporan Tahunan · Kelurahan Kadomas</span><br>
       Pengelola Laporan Tahunan — Kelurahan Kadomas, untuk Sekretaris Lurah.
       Tanpa realisasi keuangan: keuangan dikelola langsung oleh kecamatan.
     </div>

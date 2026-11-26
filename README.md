@@ -1,8 +1,8 @@
-# Pengelola Laporan Tahunan — Kelurahan Kadomas (LPPK)
+# Pengelola Laporan Tahunan — Kelurahan Kadomas (Laporan Tahunan)
 
 Aplikasi mandiri (static site, tanpa build step) untuk Sekretaris Lurah
 **Kelurahan Kadomas** menyusun **Laporan Penyelenggaraan Pemerintahan
-Kelurahan (LPPK)**. Siapa pun yang membuka link bisa mengisi data bersama —
+Kelurahan (Laporan Tahunan)**. Siapa pun yang membuka link bisa mengisi data bersama —
 tanpa akun Muse.
 
 **Tanpa realisasi keuangan** — keuangan dikelola langsung oleh kecamatan.
@@ -11,10 +11,10 @@ tanpa akun Muse.
 
 | Bagian | Isi |
 |---|---|
-| **Beranda** | Alur 4 langkah (01 Identitas → 02 Isi Data → 03 Rekap → 04 Cetak & Serah), papan kelengkapan 9 kelompok data LPPK per tahun, persen kelengkapan yang menghitung naik + bilah progres beranimasi, form identitas kelurahan & penandatangan (Lurah + Sekretaris) |
+| **Beranda** | Alur 4 langkah (01 Identitas → 02 Isi Data → 03 Rekap → 04 Cetak & Serah), papan kelengkapan 9 kelompok data Laporan Tahunan per tahun, persen kelengkapan yang menghitung naik + bilah progres beranimasi, form identitas kelurahan & penandatangan (Lurah + Sekretaris) |
 | **Input Data** | Monografi per 31 Desember + 10 kategori entri yang bisa tambah/ubah/hapus: program kerja, pelayanan, surat masuk, surat keluar (buku agenda), pembangunan, pembinaan kemasyarakatan, pemberdayaan masyarakat, kesehatan & pendidikan, permasalahan & kendala, rencana tindak lanjut |
 | **Rekap** | Kartu ringkasan (total entri, surat masuk/keluar, kelompok terisi), donat capaian beranimasi, grafik batang per kategori |
-| **Cetak LPPK** | Dokumen resmi BAB I–IX dengan kop kelurahan dan lembar tanda tangan, siap cetak / simpan PDF lewat dialog cetak browser |
+| **Cetak Laporan Tahunan** | Dokumen resmi BAB I–IX dengan kop kelurahan dan lembar tanda tangan, siap cetak / simpan PDF lewat dialog cetak browser |
 | **Materi** | Syarat menjadi Sekretaris Lurah, 10 kelompok data laporan + laporan yang dihasilkan, dan roadmap 6 tahap (Okt–Mar) yang **menggambar jalurnya sendiri saat digulir** (self-drawing SVG path, pola Scrolltide) |
 
 Desain mengikuti Scrolltide house style: kertas hangat stone, satu aksen hijau resmi,
@@ -45,7 +45,7 @@ Tanpa Supabase, aplikasi berjalan penuh dalam **Mode lokal** — data tersimpan 
    **anon public key**.
 4. **Isi `config.js`:**
    ```js
-   window.LPPK_CONFIG = {
+   window.LAPORAN_CONFIG = {
      SUPABASE_URL: "https://xxxxxxxxxxxx.supabase.co",
      SUPABASE_ANON_KEY: "eyJhbGciOi..."
    };
@@ -62,12 +62,12 @@ Tanpa Supabase, aplikasi berjalan penuh dalam **Mode lokal** — data tersimpan 
 
 ## Deploy ke Vercel
 
-Nama proyek yang disarankan: **`lppk-kadomas`**.
+Nama proyek yang disarankan: **`kadomas`**.
 
 ```bash
 npm i -g vercel   # sekali saja
 cd lppk-public
-vercel --prod     # saat ditanya nama proyek, isi: lppk-kadomas
+vercel --prod     # saat ditanya nama proyek, isi: kadomas
 ```
 
 Atau lewat dashboard Vercel: **Add New → Project → Import** folder ini
@@ -89,7 +89,7 @@ lppk-public/
 
 ## Identitas default
 
-Kelurahan sudah terisi default **Kadomas** (form identitas, kop dokumen LPPK,
+Kelurahan sudah terisi default **Kadomas** (form identitas, kop dokumen Laporan Tahunan,
 dan lembar tanda tangan). Kecamatan sengaja dikosongkan — isi sendiri sesuai
 kecamatan Kelurahan Kadomas. Nama Lurah, NIP, dan penandatangan juga diisi
 sendiri lewat form Identitas di Beranda.

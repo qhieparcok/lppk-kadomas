@@ -1,5 +1,5 @@
 -- ============================================================
--- Skema Supabase — Pengelola Laporan Tahunan Lurah (LPPK)
+-- Skema Supabase — Pengelola Laporan Tahunan Lurah (Laporan Tahunan)
 -- Jalankan file ini di Supabase Dashboard → SQL Editor → Run.
 -- ============================================================
 
@@ -97,3 +97,20 @@ create policy "Publik baca items"
   on public.items for select using (true);
 create policy "Publik tulis items"
   on public.items for all using (true) with check (true);
+
+-- ============================================================
+-- HAK AKSES ROLE (WAJIB — tanpa ini semua baca/tulis gagal)
+-- ------------------------------------------------------------
+-- Kebijakan RLS di atas saja TIDAK CUKUP: role anon (dan
+-- authenticated) juga harus diberi hak atas tabelnya, kalau
+-- tidak PostgREST menolak dengan 42501 "permission denied for
+-- table ...". Ini penyebab laporan tidak bisa disimpan pada
+-- 26 Nov 2026 — tabel + policy sudah ada, tapi GRANT belum
+-- pernah dijalankan. Diperbaiki 26 Nov 2026 via pooler
+-- aws-1-ap-southeast-1 (port 6543): GRANT di bawah ini.
+-- ============================================================
+grant usage on schema public to anon, authenticated;
+
+grant select, insert, update, delete on public.report_settings to anon, authenticated;
+grant select, insert, update, delete on public.monografi to anon, authenticated;
+grant select, insert, update, delete on public.items to anon, authenticated;
