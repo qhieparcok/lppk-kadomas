@@ -1,7 +1,8 @@
 /* ============================================================
    Pengelola Laporan Tahunan Lurah (versi publik mandiri)
    Static site, tanpa build step.
-   Data: Supabase (bila config.js terisi) atau localStorage.
+   Data: Supabase — wajib. Tanpa Supabase aplikasi tidak berjalan
+   (tidak ada Mode lokal; data harus bersama supaya bisa dipakai semua orang).
    Scroll: satu rAF loop, pola engine Scrolltide (tanpa Lenis).
    ============================================================ */
 'use strict';
@@ -155,32 +156,6 @@ const state = {
 };
 
 /* ---------- Data layer ---------- */
-function createLocalStore() {
-  const key = (year, kind) => `laporan-tahunan:${year}:${kind}`;
-  const oldKey = (year, kind) => `lppk:${year}:${kind}`; // kunci lama, hanya untuk migrasi sekali baca
-  const read = (year, kind, fallback) => {
-    try {
-      let raw = localStorage.getItem(key(year, kind));
-      if (!raw) { // migrasi: data lama (mode lokal) ikut pindah ke kunci baru
-        raw = localStorage.getItem(oldKey(year, kind));
-        if (raw) { localStorage.setItem(key(year, kind), raw); localStorage.removeItem(oldKey(year, kind)); }
-      }
-      return raw ? JSON.parse(raw) : fallback;
-    }
-    catch { return fallback; }
-  };
-  const write = (year, kind, val) => localStorage.setItem(key(year, kind), JSON.stringify(val));
-  return {
-    mode: 'local',
-    async loadSettings(year) { return read(year, 'settings', null); },
-    async saveSettings(year, v) { write(year, 'settings', v); },
-    async loadMonografi(year) { return read(year, 'monografi', null); },
-    async saveMonografi(year, v) { write(year, 'monografi', v); },
-    async loadItems(year) { return read(year, 'items', []); },
-    async saveItems(year, items) { write(year, 'items', items); },
-  };
-}
-
 function loadSupabaseClient(url, key) {
   if (window.supabase) return Promise.resolve(window.supabase.createClient(url, key));
   return new Promise((resolve, reject) => {
@@ -798,15 +773,10 @@ async function loadYearData() {
   $$('.yearEcho').forEach((el) => { el.textContent = state.year; });
 }
 
-function setModeBadge(mode) {
+function setModeBadge() {
   const b = $('#modeBadge');
-  if (mode === 'supabase') {
-    b.classList.add('mode-badge--shared');
-    b.innerHTML = '<span class="dot"></span>Mode bersama · Supabase';
-  } else {
-    b.classList.remove('mode-badge--shared');
-    b.innerHTML = '<span class="dot"></span>Mode lokal <span class="mode-badge__hint">— hubungkan Supabase untuk data bersama</span>';
-  }
+  b.classList.add('mode-badge--shared');
+  b.innerHTML = '<span class="dot"></span>Mode bersama · Supabase';
 }
 
 /* ---------- Events ---------- */
@@ -914,7 +884,7 @@ let authUser = null;
 let authProfile = null;
 let authMode = 'login';
 const authEnforced = () => !!sbClient;
-const isAdmin = () => !authEnforced() || (authProfile && authProfile.role === 'admin' && authProfile.approved === true);
+const isAdmin = () => !!(authProfile && authProfile.role === 'admin' && authProfile.approved === true);
 
 async function ensureProfile(client, user) {
   const { data } = await client.from('profiles').select('*').eq('id', user.id).maybeSingle();
@@ -1062,9 +1032,9 @@ function buildYearOptions() {
 
 async function boot() {
   buildYearOptions();
-  state.store = createLocalStore();
-  setModeBadge('local');
 
+  // Model data SELALU Supabase (bersama) — tidak ada lagi Mode lokal.
+  // Tanpa Supabase aplikasi tetap terkunci dan menampilkan pesan ini.
   const cfg = window.LAPORAN_CONFIG || {};
   const url = String(cfg.SUPABASE_URL || '').trim();
   const key = String(cfg.SUPABASE_ANON_KEY || '').trim();
@@ -1073,14 +1043,24 @@ async function boot() {
       const client = await loadSupabaseClient(url, key);
       sbClient = client;
       state.store = createSupabaseStore(client);
-      setModeBadge('supabase');
+      setModeBadge();
     } catch (e) {
-      toast('Supabase tidak terjangkau — memakai Mode lokal.');
+      toast('Supabase tidak terjangkau — periksa koneksi lalu muat ulang halaman.');
     }
   }
 
   bindEvents();
   bindAuthEvents();
+
+  if (!sbClient) {
+    document.body.classList.add('locked');
+    showAuthState('form');
+    const msg = $('#authMsg');
+    if (msg) msg.textContent = 'Server data (Supabase) belum dikonfigurasi atau tidak terjangkau. Hubungi admin supaya aplikasi bisa dipakai.';
+    watchReveals();
+    startRoadmapLoop();
+    return;
+  }
 
   if (authEnforced()) {
     const { data: { session } } = await sbClient.auth.getSession();
@@ -1105,11 +1085,6 @@ async function boot() {
       renderRekap();
       renderCetak();
     }
-  } else {
-    document.body.classList.remove('locked');
-    await loadYearData();
-    renderRekap();
-    renderCetak();
   }
   watchReveals();
   startRoadmapLoop();

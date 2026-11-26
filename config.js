@@ -9,10 +9,11 @@
       Settings → API, lalu isi dua nilai di bawah ini.
    4. Deploy ulang (Vercel) atau muat ulang halaman.
 
-   Bila kedua nilai di bawah ini KOSONG, aplikasi tetap berjalan
-   penuh memakai localStorage (Mode lokal — data hanya di browser
-   ini, tidak bersama). Jangan pernah menulis service_role key
-   di file ini: anon key saja sudah cukup dan aman untuk dibagikan.
+   Kedua nilai di bawah ini WAJIB terisi — tanpa Supabase aplikasi
+   tidak berjalan (tidak ada lagi Mode lokal; data harus bersama
+   supaya bisa dipakai semua orang). Jangan pernah menulis
+   service_role key di file ini: anon key saja sudah cukup dan aman
+   untuk dibagikan.
    ============================================================ */
 
 window.LAPORAN_CONFIG = {

@@ -6,8 +6,6 @@ Kelurahan (Laporan Tahunan)**. Masuk dengan email dan kata sandi —
 pendaftar pertama otomatis menjadi admin; akun baru harus disetujui admin
 dulu sebelum bisa memakai aplikasi.
 
-**Tanpa realisasi keuangan** — keuangan dikelola langsung oleh kecamatan.
-
 ## Fitur
 
 | Bagian | Isi |
@@ -53,8 +51,8 @@ Supabase butuh koneksi internet.
 
 ## Menghubungkan Supabase (data bersama)
 
-Tanpa Supabase, aplikasi berjalan penuh dalam **Mode lokal** — data tersimpan di
-`localStorage` browser masing-masing (tidak bersama). Untuk data bersama:
+Supabase **wajib** — tanpa Supabase aplikasi tidak berjalan (tidak ada lagi
+Mode lokal; data harus bersama supaya bisa dipakai semua orang). Untuk data bersama:
 
 1. **Buat project gratis** di https://supabase.com (New project, nama proyek:
    `lppk-lurah`).
@@ -113,5 +111,4 @@ kecamatan Kelurahan Kadomas. Nama Lurah, NIP, dan penandatangan juga diisi
 sendiri lewat form Identitas di Beranda.
 
 Di Beranda ada tombol **Unduh cadangan (JSON)** dan **Pulihkan cadangan** —
-berguna untuk memindahkan data antar mode (lokal ↔ Supabase) atau sebagai
-arsip tahunan.
+berguna sebagai arsip tahunan atau untuk memindahkan data antar perangkat.
