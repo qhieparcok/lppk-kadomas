@@ -129,18 +129,18 @@ const MONOGRAFI_FIELDS = [
 ];
 
 const ROADMAP_STEPS = [
-  { kicker: 'Tahap 1 · Oktober – November', title: 'Persiapan',
+  { kicker: 'Tahap 1 · Januari – Februari', title: 'Persiapan',
     body: 'Susun tim penyusun, tetapkan format dan template Laporan Tahunan, dan inventarisasi data yang sudah ada.' },
-  { kicker: 'Tahap 2 · November – Desember', title: 'Pengumpulan Berjalan',
-    body: 'Kumpulkan data bulanan: surat masuk dan keluar, pelayanan, dan kependudukan. Tutup monografi per 31 Desember.' },
-  { kicker: 'Tahap 3 · Januari', title: 'Rekap Akhir & Surat',
-    body: 'Rekap seluruh data tahun berjalan, verifikasi dan validasi, hitung capaian terhadap target, dan rekap buku agenda surat.' },
-  { kicker: 'Tahap 4 · Februari', title: 'Penyusunan Draf',
+  { kicker: 'Tahap 2 · Maret – April', title: 'Pengumpulan Berjalan',
+    body: 'Kumpulkan data bulanan: surat masuk dan keluar, pelayanan, dan kependudukan.' },
+  { kicker: 'Tahap 3 · Mei – Juni', title: 'Rekap Tengah Tahun',
+    body: 'Rekap data semester pertama, verifikasi dan validasi, hitung capaian terhadap target, dan rekap buku agenda surat.' },
+  { kicker: 'Tahap 4 · Juli – Agustus', title: 'Pengumpulan Lanjutan',
+    body: 'Lanjutkan pengumpulan data bulanan dan lengkapi monografi; pastikan setiap kelompok data terisi.' },
+  { kicker: 'Tahap 5 · September – Oktober', title: 'Penyusunan Draf',
     body: 'Tulis draf Laporan Tahunan BAB I–IX dari data yang sudah direkap, lalu review internal bersama Lurah.' },
-  { kicker: 'Tahap 5 · Akhir Februari – Awal Maret', title: 'Pemeriksaan & Pengesahan',
-    body: 'Pemeriksaan akhir, koreksi, kemudian pengesahan dan tanda tangan oleh Lurah.' },
-  { kicker: 'Tahap 6 · Maret', title: 'Penyerahan ke Camat',
-    body: 'Serahkan Laporan Tahunan ke Camat. Batas waktu: paling lambat 3 bulan setelah tahun anggaran berakhir.' },
+  { kicker: 'Tahap 6 · November – Desember', title: 'Rekap Akhir & Penyerahan',
+    body: 'Rekap seluruh data tahun berjalan, tutup monografi per 31 Desember, pemeriksaan akhir, pengesahan dan tanda tangan oleh Lurah, lalu serahkan ke Camat — paling lambat 3 bulan setelah tahun anggaran berakhir.' },
 ];
 
 /* ---------- State ---------- */
@@ -623,7 +623,7 @@ function renderCetak() {
         <p>NIP. ${esc(s.lurah_nip || '........................')}</p>
       </div>
       <div>
-        <p>Kelurahan ${esc(kel)}, Maret ${y + 1}<br>Sekretaris Lurah</p>
+        <p>Kelurahan ${esc(kel)}, Desember ${y}<br>Sekretaris Lurah</p>
         <div class="sign-space"></div>
         <p class="sign-name">${esc(s.sek_nama || '( Nama Sekretaris Lurah )')}</p>
         <p>NIP. ${esc(s.sek_nip || '........................')}</p>
