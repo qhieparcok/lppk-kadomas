@@ -15,6 +15,14 @@ create table if not exists public.report_settings (
   lurah_nip   text,
   sek_nama    text,
   sek_nip     text,
+  kasi_pembangunan_nama      text,
+  kasi_pembangunan_nip       text,
+  kasi_pemerintahan_nama     text,
+  kasi_pemerintahan_nip      text,
+  kasi_kesos_nama            text,
+  kasi_kesos_nip             text,
+  penandatangan_kedua        text not null default 'sekretaris'
+    check (penandatangan_kedua in ('sekretaris', 'kasi_pembangunan', 'kasi_pemerintahan', 'kasi_kesos')),
   created_at  timestamptz not null default now(),
   updated_at  timestamptz not null default now()
 );
@@ -208,3 +216,26 @@ create policy "Entri dibaca yang login" on public.items
 drop policy if exists "Entri ditulis yang login" on public.items;
 create policy "Entri ditulis yang login" on public.items
   for all to authenticated using (public.is_approved()) with check (public.is_approved());
+
+-- ===========================================================
+-- MIGRASI 27 Nov 2026 — Penandatangan kedua per bidang
+-- -----------------------------------------------------------
+-- Penandatangan di samping Lurah kini bisa dipilih per bidang:
+-- Sekretaris Lurah, Kasi Pembangunan, Kasi Pemerintahan, atau
+-- Kasi Kesejahteraan Sosial. Nama + NIP tiap Kasi disimpan di
+-- report_settings; pilihan bidang tersimpan per tahun laporan.
+-- Jalankan blok ini sekali di SQL Editor bila tabel sudah ada.
+-- ===========================================================
+alter table public.report_settings
+  add column if not exists kasi_pembangunan_nama text,
+  add column if not exists kasi_pembangunan_nip text,
+  add column if not exists kasi_pemerintahan_nama text,
+  add column if not exists kasi_pemerintahan_nip text,
+  add column if not exists kasi_kesos_nama text,
+  add column if not exists kasi_kesos_nip text,
+  add column if not exists penandatangan_kedua text not null default 'sekretaris';
+alter table public.report_settings
+  drop constraint if exists report_settings_penandatangan_kedua_check;
+alter table public.report_settings
+  add constraint report_settings_penandatangan_kedua_check
+  check (penandatangan_kedua in ('sekretaris', 'kasi_pembangunan', 'kasi_pemerintahan', 'kasi_kesos'));

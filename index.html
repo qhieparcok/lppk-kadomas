@@ -163,6 +163,34 @@
           <label for="fSekNip">NIP Sekretaris Lurah</label>
           <input id="fSekNip" name="sek_nip" type="text" placeholder="NIP Sekretaris Lurah" autocomplete="off">
         </div>
+        <div class="field field--full form-subhead">
+          <h3>Pejabat penandatangan per bidang</h3>
+          <p>Nama dan NIP tiap Kasi. Yang bertanda tangan di samping Lurah dipilih lewat filter bidang di tab Cetak.</p>
+        </div>
+        <div class="field">
+          <label for="fKasiPembangunanNama">Nama Kasi Pembangunan</label>
+          <input id="fKasiPembangunanNama" name="kasi_pembangunan_nama" type="text" placeholder="Nama lengkap Kasi Pembangunan" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="fKasiPembangunanNip">NIP Kasi Pembangunan</label>
+          <input id="fKasiPembangunanNip" name="kasi_pembangunan_nip" type="text" placeholder="NIP Kasi Pembangunan" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="fKasiPemerintahanNama">Nama Kasi Pemerintahan</label>
+          <input id="fKasiPemerintahanNama" name="kasi_pemerintahan_nama" type="text" placeholder="Nama lengkap Kasi Pemerintahan" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="fKasiPemerintahanNip">NIP Kasi Pemerintahan</label>
+          <input id="fKasiPemerintahanNip" name="kasi_pemerintahan_nip" type="text" placeholder="NIP Kasi Pemerintahan" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="fKasiKesosNama">Nama Kasi Kesejahteraan Sosial</label>
+          <input id="fKasiKesosNama" name="kasi_kesos_nama" type="text" placeholder="Nama lengkap Kasi Kesejahteraan Sosial" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="fKasiKesosNip">NIP Kasi Kesejahteraan Sosial</label>
+          <input id="fKasiKesosNip" name="kasi_kesos_nip" type="text" placeholder="NIP Kasi Kesejahteraan Sosial" autocomplete="off">
+        </div>
       </div>
       <div class="btn-row">
         <button class="btn" type="submit">Simpan identitas</button>
@@ -328,6 +356,18 @@
       Dokumen di bawah ini disusun otomatis dari data yang sudah diisi — kop kelurahan,
       sembilan bab, dan lembar tanda tangan Lurah dan Sekretaris Lurah.
     </p>
+    <div class="signer-filter no-print" data-reveal style="--i:3">
+      <div class="field">
+        <label for="signerSelect">Penandatangan di samping Lurah</label>
+        <select id="signerSelect">
+          <option value="sekretaris">Sekretaris Lurah</option>
+          <option value="kasi_pembangunan">Kasi Pembangunan</option>
+          <option value="kasi_pemerintahan">Kasi Pemerintahan</option>
+          <option value="kasi_kesos">Kasi Kesejahteraan Sosial</option>
+        </select>
+        <p class="hint" id="signerHint"></p>
+      </div>
+    </div>
     <div class="btn-row no-print" data-reveal style="--i:3">
       <button class="btn" type="button" id="printBtn">Cetak / simpan PDF</button>
       <button class="btn btn--ghost" type="button" data-goto="input">Lengkapi data dulu</button>

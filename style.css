@@ -731,3 +731,13 @@ body.locked #roadmapStage { display: none !important; }
   font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em;
   text-transform: uppercase; color: var(--muted); margin: -8px 0 20px;
 }
+
+/* ---------- Penandatangan per bidang (27 Nov 2026) ---------- */
+/* Subjudul di dalam form identitas */
+.form-subhead { margin: 10px 0 2px; }
+.form-subhead h3 { font-size: 17px; }
+.form-subhead p { font-size: 13.5px; color: var(--muted); margin-top: 4px; }
+
+/* Filter bidang di tab Cetak */
+.signer-filter { max-width: 440px; margin: 26px 0 2px; }
+.signer-filter select { width: 100%; }

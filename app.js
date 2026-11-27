@@ -31,7 +31,34 @@ const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').match
 const DEFAULT_SETTINGS = {
   kelurahan: 'Kadomas', kecamatan: '',
   lurah_nama: '', lurah_nip: '', sek_nama: '', sek_nip: '',
+  kasi_pembangunan_nama: '', kasi_pembangunan_nip: '',
+  kasi_pemerintahan_nama: '', kasi_pemerintahan_nip: '',
+  kasi_kesos_nama: '', kasi_kesos_nip: '',
+  penandatangan_kedua: 'sekretaris',
 };
+
+// Penandatangan kedua di samping Lurah — dipilih per bidang di tab Cetak.
+// id harus sama dengan nilai kolom report_settings.penandatangan_kedua.
+const PEJABAT_KEDUA = [
+  { id: 'sekretaris', jabatan: 'Sekretaris Lurah', namaKey: 'sek_nama', nipKey: 'sek_nip' },
+  { id: 'kasi_pembangunan', jabatan: 'Kasi Pembangunan', namaKey: 'kasi_pembangunan_nama', nipKey: 'kasi_pembangunan_nip' },
+  { id: 'kasi_pemerintahan', jabatan: 'Kasi Pemerintahan', namaKey: 'kasi_pemerintahan_nama', nipKey: 'kasi_pemerintahan_nip' },
+  { id: 'kasi_kesos', jabatan: 'Kasi Kesejahteraan Sosial', namaKey: 'kasi_kesos_nama', nipKey: 'kasi_kesos_nip' },
+];
+
+// Pejabat penandatangan kedua yang aktif dari settings (jatuh ke Sekretaris
+// Lurah bila pilihan tidak dikenal — mis. data lama sebelum fitur ini ada).
+function pejabatKedua(s) {
+  const p = PEJABAT_KEDUA.find((x) => x.id === (s && s.penandatangan_kedua)) || PEJABAT_KEDUA[0];
+  return { jabatan: p.jabatan, nama: (s && s[p.namaKey]) || '', nip: (s && s[p.nipKey]) || '' };
+}
+
+// Titi mangsa: "Kadomas, 27 November 2026" — tempat cukup "Kadomas" (tanpa
+// kata "Kelurahan"), tanggal = tanggal hari ini saat dokumen dibuka/dicetak.
+function fmtTitiMangsa() {
+  const d = new Date();
+  return `Kadomas, ${d.toLocaleString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`;
+}
 
 const CATEGORIES = [
   { id: 'program_kerja', num: '01', name: 'Program Kerja', group: 'program_kerja',
@@ -180,7 +207,7 @@ function createSupabaseStore(client) {
       const { data, error } = await client.from('report_settings').select('*').eq('tahun', year).maybeSingle();
       if (error) throw error;
       if (!data) return null;
-      return { kelurahan: data.kelurahan || '', kecamatan: data.kecamatan || '', lurah_nama: data.lurah_nama || '', lurah_nip: data.lurah_nip || '', sek_nama: data.sek_nama || '', sek_nip: data.sek_nip || '' };
+      return { kelurahan: data.kelurahan || '', kecamatan: data.kecamatan || '', lurah_nama: data.lurah_nama || '', lurah_nip: data.lurah_nip || '', sek_nama: data.sek_nama || '', sek_nip: data.sek_nip || '', kasi_pembangunan_nama: data.kasi_pembangunan_nama || '', kasi_pembangunan_nip: data.kasi_pembangunan_nip || '', kasi_pemerintahan_nama: data.kasi_pemerintahan_nama || '', kasi_pemerintahan_nip: data.kasi_pemerintahan_nip || '', kasi_kesos_nama: data.kasi_kesos_nama || '', kasi_kesos_nip: data.kasi_kesos_nip || '', penandatangan_kedua: data.penandatangan_kedua || 'sekretaris' };
     },
     async saveSettings(year, v) {
       const { error } = await client.from('report_settings').upsert(clean({ tahun: year, ...v }), { onConflict: 'tahun' });
@@ -325,6 +352,12 @@ function fillIdentityForm() {
   f.lurah_nip.value = s.lurah_nip || '';
   f.sek_nama.value = s.sek_nama || '';
   f.sek_nip.value = s.sek_nip || '';
+  f.kasi_pembangunan_nama.value = s.kasi_pembangunan_nama || '';
+  f.kasi_pembangunan_nip.value = s.kasi_pembangunan_nip || '';
+  f.kasi_pemerintahan_nama.value = s.kasi_pemerintahan_nama || '';
+  f.kasi_pemerintahan_nip.value = s.kasi_pemerintahan_nip || '';
+  f.kasi_kesos_nama.value = s.kasi_kesos_nama || '';
+  f.kasi_kesos_nip.value = s.kasi_kesos_nip || '';
 }
 
 function fillMonografiForm() {
@@ -544,12 +577,28 @@ function pbbSummary(items, year, kel) {
   </tbody></table>`;
 }
 
+/* ---------- Render: Cetak Laporan Tahunan ---------- */
+function updateSignerHint() {
+  const sel = $('#signerSelect');
+  const hint = $('#signerHint');
+  if (!sel || !hint) return;
+  const s = state.settings || DEFAULT_SETTINGS;
+  const kedua = pejabatKedua({ ...s, penandatangan_kedua: sel.value });
+  hint.textContent = kedua.nama
+    ? `Yang bertanda tangan: ${kedua.nama} — NIP ${kedua.nip || '........................'}`
+    : `Nama ${kedua.jabatan} belum diisi — isi di Beranda › Identitas kelurahan & penandatangan.`;
+}
+
 function renderCetak() {
   const s = state.settings || DEFAULT_SETTINGS;
   const m = state.monografi || {};
   const y = state.year;
   const kel = s.kelurahan || 'Kadomas';
   const kec = s.kecamatan || '........................';
+  const kedua = pejabatKedua(s);
+  // Sinkronkan filter bidang di tab Cetak dengan pilihan tersimpan.
+  const sel = $('#signerSelect');
+  if (sel) { sel.value = s.penandatangan_kedua || 'sekretaris'; updateSignerHint(); }
   const totalPend = (Number(m.penduduk_l) || 0) + (Number(m.penduduk_p) || 0);
   const bab = (romawi, judul, inner) => `<h2>BAB ${romawi}</h2><h3>${judul}</h3>${inner}`;
 
@@ -624,10 +673,10 @@ function renderCetak() {
         <p>NIP. ${esc(s.lurah_nip || '........................')}</p>
       </div>
       <div>
-        <p>Kelurahan ${esc(kel)}, Desember ${y}<br>Sekretaris Lurah</p>
+        <p>${esc(fmtTitiMangsa())}<br>${esc(kedua.jabatan)}</p>
         <div class="sign-space"></div>
-        <p class="sign-name">${esc(s.sek_nama || '( Nama Sekretaris Lurah )')}</p>
-        <p>NIP. ${esc(s.sek_nip || '........................')}</p>
+        <p class="sign-name">${esc(kedua.nama || `( Nama ${kedua.jabatan} )`)}</p>
+        <p>NIP. ${esc(kedua.nip || '........................')}</p>
       </div>
     </div>`;
 }
@@ -807,6 +856,15 @@ function bindEvents() {
       lurah_nip: f.lurah_nip.value.trim(),
       sek_nama: f.sek_nama.value.trim(),
       sek_nip: f.sek_nip.value.trim(),
+      kasi_pembangunan_nama: f.kasi_pembangunan_nama.value.trim(),
+      kasi_pembangunan_nip: f.kasi_pembangunan_nip.value.trim(),
+      kasi_pemerintahan_nama: f.kasi_pemerintahan_nama.value.trim(),
+      kasi_pemerintahan_nip: f.kasi_pemerintahan_nip.value.trim(),
+      kasi_kesos_nama: f.kasi_kesos_nama.value.trim(),
+      kasi_kesos_nip: f.kasi_kesos_nip.value.trim(),
+      // Pilihan bidang penandatangan dipertahankan — ia diatur lewat
+      // filter di tab Cetak, bukan lewat form ini.
+      penandatangan_kedua: (state.settings && state.settings.penandatangan_kedua) || 'sekretaris',
     };
     try {
       await state.store.saveSettings(state.year, state.settings);
@@ -870,6 +928,17 @@ function bindEvents() {
   });
 
   $('#printBtn').addEventListener('click', () => window.print());
+
+  // Filter bidang penandatangan kedua (tab Cetak, admin saja — tab ini
+  // memang hanya tampil untuk admin). Pilihan tersimpan per tahun laporan.
+  $('#signerSelect').addEventListener('change', async (e) => {
+    state.settings = { ...(state.settings || DEFAULT_SETTINGS), penandatangan_kedua: e.target.value };
+    try {
+      await state.store.saveSettings(state.year, state.settings);
+    } catch (err) { toast('Gagal menyimpan pilihan penandatangan: ' + err.message); return; }
+    renderCetak();
+    toast('Penandatangan kedua diubah.');
+  });
   $('#exportBtn').addEventListener('click', exportBackup);
   $('#importBtn').addEventListener('click', () => $('#importFile').click());
   $('#importFile').addEventListener('change', (e) => {
