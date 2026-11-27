@@ -19,6 +19,7 @@
     <p class="auth-eyebrow">Kelurahan Kadomas</p>
     <h1>Laporan <em>Tahunan.</em></h1>
     <p class="auth-sub">Masuk untuk mengelola laporan tahunan. Pendaftar pertama otomatis menjadi admin.</p>
+    <p class="auth-meta">Kelurahan Kadomas · Kabupaten Pandeglang · Banten</p>
     <form id="authForm" novalidate>
       <div class="field">
         <label for="authEmail">Email</label>
@@ -189,8 +190,8 @@
     <form class="card" id="monografiForm" data-reveal>
       <div class="form-grid">
         <div class="field">
-          <label for="mLuas">Luas wilayah (km²)</label>
-          <input id="mLuas" name="luas_wilayah" type="number" min="0" step="0.01" placeholder="cth. 4,25">
+          <label for="mLuas">Luas wilayah (Ha)</label>
+          <div class="input-wrap"><input id="mLuas" name="luas_wilayah" type="number" min="0" step="0.01" placeholder="cth. 425"><span class="unit-chip">Ha</span></div>
         </div>
         <div class="field">
           <label for="mLingkungan">Jumlah lingkungan / dusun</label>
@@ -276,26 +277,26 @@
     </p>
 
     <div class="grid grid--4" style="margin-top:32px">
-      <article class="card" data-reveal style="--i:0">
+      <article class="card card--lift" data-reveal style="--i:0">
         <div class="stat-num" id="statTotal">0</div>
         <div class="stat-label">Total entri tercatat</div>
       </article>
-      <article class="card" data-reveal style="--i:1">
+      <article class="card card--lift" data-reveal style="--i:1">
         <div class="stat-num" id="statMasuk">0</div>
         <div class="stat-label">Surat masuk</div>
       </article>
-      <article class="card" data-reveal style="--i:2">
+      <article class="card card--lift" data-reveal style="--i:2">
         <div class="stat-num" id="statKeluar">0</div>
         <div class="stat-label">Surat keluar</div>
       </article>
-      <article class="card" data-reveal style="--i:3">
+      <article class="card card--lift" data-reveal style="--i:3">
         <div class="stat-num" id="statGroups">0/9</div>
         <div class="stat-label">Kelompok data terisi</div>
       </article>
     </div>
 
     <div class="grid grid--2" style="margin-top:16px">
-      <article class="card" data-reveal>
+      <article class="card card--lift" data-reveal>
         <h3>Capaian kelengkapan</h3>
         <p class="card__sub">Sepuluh kelompok data Laporan Tahunan yang sudah terisi.</p>
         <div class="donut-wrap" style="margin-top:20px">
@@ -311,7 +312,7 @@
         </div>
       </article>
 
-      <article class="card" data-reveal>
+      <article class="card card--lift" data-reveal>
         <h3>Entri per kategori</h3>
         <p class="card__sub">Jumlah entri pada tiap kategori tahun ini.</p>
         <div id="barChart" style="margin-top:12px"><!-- diisi JS --></div>

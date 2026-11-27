@@ -345,6 +345,7 @@ function renderCatRail() {
       <span class="cat-btn__num">${c.num}</span>
       <span class="cat-btn__name">${esc(c.name)}</span>
       <span class="cat-btn__count">${counts[c.id] || 0}</span>
+      <span class="cat-btn__go" aria-hidden="true">→</span>
     </button>`).join('');
   $$('.cat-btn', rail).forEach((b) => b.addEventListener('click', () => setCategory(b.dataset.cat)));
 }
@@ -553,7 +554,7 @@ function renderCetak() {
   const bab = (romawi, judul, inner) => `<h2>BAB ${romawi}</h2><h3>${judul}</h3>${inner}`;
 
   const monografiRows = [
-    ['Luas wilayah', m.luas_wilayah ? `${fmtNum(m.luas_wilayah)} km²` : '—'],
+    ['Luas wilayah', m.luas_wilayah ? `${fmtNum(m.luas_wilayah)} Ha` : '—'],
     ['Jumlah lingkungan / dusun', m.jumlah_lingkungan ? fmtNum(m.jumlah_lingkungan) : '—'],
     ['Jumlah RW', m.jumlah_rw ? fmtNum(m.jumlah_rw) : '—'],
     ['Jumlah RT', m.jumlah_rt ? fmtNum(m.jumlah_rt) : '—'],

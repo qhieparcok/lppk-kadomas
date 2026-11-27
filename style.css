@@ -677,3 +677,57 @@ body.locked #roadmapStage { display: none !important; }
 }
 .user-row .pill--ok { color: var(--accent-deep); border-color: var(--accent); background: var(--accent-soft); }
 .user-row .pill--wait { color: var(--gold); border-color: var(--gold); }
+
+/* ---------- Polish 27 Nov 2026: satuan Ha + sentuhan Visual Explorer ----------
+   Hanya UI aplikasi. Dokumen cetak (.laporan-doc) tidak disentuh — tetap formal. */
+[id] { scroll-margin-top: 88px; }
+.field input, .field select, .field textarea { font-variant-numeric: tabular-nums; }
+
+/* Satuan di dalam kolom input (mis. "Ha" di samping angka luas) */
+.input-wrap { position: relative; }
+.input-wrap input { padding-right: 48px; }
+.unit-chip {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em;
+  color: var(--muted); pointer-events: none;
+}
+
+/* Tab: latar halus saat hover */
+.tab-btn:hover { background: var(--panel); border-radius: 10px 10px 0 0; }
+
+/* Pemilih tahun di topbar: senada dengan komponen lain */
+.year-pick select {
+  font-family: var(--font-mono); font-size: 13px;
+  padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--panel-2);
+}
+.year-pick select:focus {
+  outline: none; border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-tint);
+}
+
+/* Kartu rekap: terangkat + bergaris lime saat hover */
+.card--lift {
+  transition: transform 250ms var(--ease-out), box-shadow 250ms var(--ease-out),
+    border-color 250ms var(--ease-out);
+}
+.card--lift:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-card);
+}
+
+/* Rel kategori: panah muncul saat hover / aktif */
+.cat-btn__go {
+  font-family: var(--font-mono); color: var(--accent);
+  opacity: 0; transform: translateX(-4px);
+  transition: opacity 200ms var(--ease-out), transform 200ms var(--ease-out);
+}
+.cat-btn:hover .cat-btn__go,
+.cat-btn[aria-pressed="true"] .cat-btn__go { opacity: 1; transform: none; }
+
+/* Kartu login: baris lokasi di bawah subjudul */
+.auth-meta {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--muted); margin: -8px 0 20px;
+}
